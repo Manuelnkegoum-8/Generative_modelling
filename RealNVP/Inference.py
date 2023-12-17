@@ -7,7 +7,7 @@ import numpy as np
 
 #MODEL PARAMETERS
 DIM = 4
-NUM_LAYERS = 6
+NUM_LAYERS = 4
 HIDDEN_DIM = 32
 parser = argparse.ArgumentParser()
 parser.add_argument("--samples", type = int,default=410)
