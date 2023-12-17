@@ -50,24 +50,6 @@ class KendallDependenceMetric(nn.Module):
     def __init__(self):
         super(KendallDependenceMetric, self).__init__()
 
-    def dependence(self, X: torch.Tensor) -> torch.Tensor:
-        """
-        Computes the dependence values for each observation in the input.
-        Args:
-            X (torch.Tensor): Input values.
-        Returns:
-            torch.Tensor: Dependence values.
-        """
-        size, dim = X.size()
-        device_ = X.device
-        Z = torch.zeros(size)
-        for i in range(size):
-            u = (X[i, :] > X).all(dim=1) & (torch.arange(size, device=device_) != i)
-            t = u.sum().item()
-            Z[i] = t
-        Z /= (size - 1)
-        return Z
-
     def forward(self, X: torch.Tensor, X_hat: torch.Tensor) -> torch.Tensor:
         """
         Computes the Kendall dependence metric between two distributions.
@@ -77,6 +59,13 @@ class KendallDependenceMetric(nn.Module):
         Returns:
             torch.Tensor: Kendall dependence metric.
         """
-        Z, Zhat = self.dependence(X), self.dependence(X_hat)
-        Z, Zhat = torch.sort(Z).values, torch.sort(Zhat).values
-        return torch.norm(Z - Zhat, p=1) / Z.size(0)
+        n = len(X)
+        assert len(X_hat) == n, "Both lists have to be of equal length"
+
+        i, j = torch.meshgrid(torch.arange(n), torch.arange(n))
+        a = torch.argsort(X,axis=0)
+        b = torch.argsort(X_hat,axis=0)
+
+        ndisordered = torch.logical_or(torch.logical_and(a[i] < a[j], b[i] > b[j]), torch.logical_and(a[i] > a[j], b[i] < b[j])).sum().item()
+
+        return torch.tensor(ndisordered / (n * (n - 1)))
