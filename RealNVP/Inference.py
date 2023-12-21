@@ -5,13 +5,13 @@ import argparse
 import os
 import numpy as np
 
-#MODEL PARAMETERS
+# MODEL PARAMETERS
 DIM = 4
 NUM_LAYERS = 4
 HIDDEN_DIM = 64
 parser = argparse.ArgumentParser()
-parser.add_argument("--samples", type = int,default=410)
-parser.add_argument("--model",type=str,default='realnvp')
+parser.add_argument("--samples", type = int, default = 410)
+parser.add_argument("--model", type= str , default = 'realnvp')
 
 def init_model(path,device):
     """
